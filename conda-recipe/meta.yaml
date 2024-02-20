@@ -1,0 +1,34 @@
+package:
+  name: "sbds"
+  version: "0.1.0"
+
+source:
+  # Relative path to the parent directory.
+  path: ..
+
+requirements:
+  host:
+    - python
+    - setuptools
+  build:
+    - python {{ python }}
+  run:
+    - python
+    # dependencies are defined in setup.py
+    {% for dep in data['install_requires'] %}
+    - {{ dep.lower() }}
+    {% endfor %}
+    # - dependencyPackage1
+    # - dependencyPackage2
+    # ...
+
+about:
+  home: https://github.com/openSourcerer9000/sbds
+  license: MIT license
+  license_familY: MIT license
+  license_file: LICENSE
+  summary: "Help Santa detect and segment building footprints in order to make it down every chimney in the world on Christmas!"
+
+extra:
+  recipe-maintainers:
+    - openSourcerer9000

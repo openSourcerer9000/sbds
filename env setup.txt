@@ -1,0 +1,13 @@
+conda create -n samgeo -c conda-forge python=3.11 geocube
+conda activate samgeo
+conda install -c conda-forge mamba
+mamba install -c conda-forge segment-geospatial groundingdino-py segment-anything-fast leafmap localtileserver holoviews hvplot geoviews 
+pip install patchify
+
+If you have an NVIDIA GPU, this link should provide you the correct CUDA install command for your platform
+#  https://pytorch.org/get-started/locally/
+conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
+
+mamba install -c conda-forge segment-geospatial
+mamba install -c conda-forge groundingdino-py segment-anything-fast
+mamba install -c conda-forge leafmap localtileserver
