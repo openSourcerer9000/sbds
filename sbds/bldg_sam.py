@@ -522,7 +522,7 @@ class BldgSAM:
                 )  # Convert numpy array to PIL image, excluding the alpha channel
         elif isinstance(image, np.ndarray):
             image_np = image
-            image_pil = Image.fromarray(image_pil)
+            image_pil = Image.fromarray(image_np)
         elif isinstance(image, Image.Image):
             image_pil = image
             image_np = np.array(image_pil)

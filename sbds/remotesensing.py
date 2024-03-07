@@ -17,13 +17,17 @@ from bldg_sam import BldgSAM
 g = 'geometry'
 from shapely.geometry import box
 
+pth = Path.cwd()
+YOLOckpt = pth/'best.pt'
+
 # def getBuildings(extents=None,
 #     image='download',
 #     outVector='default',
 #     box_threshold=0.0, 
 #     # showplot=True,
 #     source='Satellite',
-#     overwrite=True):
+#     overwrite=True,
+    # YOLOcheckpoint=YOLOckpt):
 #     extents = Path(extents)
 #     # Take bounding box of area of interest in WGS 84 coordinates
 #     AOI = gpd.read_file(extents)
@@ -47,7 +51,7 @@ from shapely.geometry import box
 #     # 🤖 Automatic Segmentation with Custom Fine-Tuned Model 
 
 #     # ckpt = Path(r'C:\Users\seanm\Docs\SegmentAnything\finetune\runs\detect\train5\weights\best.pt')
-#     sam = BldgSAM()
+#     sam = BldgSAM(YOLOcheckpoint=YOLOcheckpoint)
 #     # If you have an NVIDIA GPU and have set up CUDA correctly, this will return 'cuda'
 #     # If not, this link should provide you the correct install command for your platform
 #     #  https://pytorch.org/get-started/locally/
@@ -75,7 +79,7 @@ from shapely.geometry import box
     # )
 
 
-def delphic(sam,image,outVector='default',box_threshold=0.0):
+def delphic(sam,image,outVector='default',outTIF='default',box_threshold=0.0):
     '''
     Run inference on the image and return the vectorized buildings\n
     image (Image): Input image must be a path to an image file, a numpy array, or a PIL Image.\n
@@ -96,7 +100,8 @@ def delphic(sam,image,outVector='default',box_threshold=0.0):
     # `box_threshold`: This value is used for object detection in the image. A higher value makes the model more selective, identifying only the most confident object instances, leading to fewer overall detections. A lower value, conversely, makes the model more tolerant, leading to increased detections, including potentially less confident ones.
     # <br><br>
     # `text_threshold`: This value is used to associate the detected objects with the provided text prompt. A higher value requires a stronger association between the object and the text prompt, leading to more precise but potentially fewer associations. A lower value allows for looser associations, which could increase the number of associations but also introduce less precise matches.
-    outTIF = image.parent/f"{image.stem}-bldgs.tif"
+    if outTIF=='default':
+        outTIF = image.parent/f"{image.stem}-bldgs.tif"
     # Load the TIF image file and run inference
     sam.show_anns(
         cmap='Greys_r',
@@ -107,5 +112,5 @@ def delphic(sam,image,outVector='default',box_threshold=0.0):
         output=str(outTIF),
     )
     vector = extents.parent/f"{image.stem}-bldgs.gpkg" if outVector=='default' else outVector
-    sam.raster_to_vector(outTIF, str(vector))
+    sam.raster_to_vector(str(outTIF), str(vector))
     return vector
