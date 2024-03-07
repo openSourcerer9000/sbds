@@ -488,7 +488,7 @@ class BldgSAM:
         Run both YOLOv8 and SAM model prediction.
 
         Parameters:
-            image (Image): Input PIL Image.
+            image (Image): Input image must be a path to an image file, a numpy array, or a PIL Image.
             box_threshold (float): Box threshold for the prediction.
             output (str, optional): Output path for the prediction. Defaults to None.
             mask_multiplier (int, optional): Mask multiplier for the prediction. Defaults to 255.
@@ -520,9 +520,14 @@ class BldgSAM:
                 image_pil = Image.fromarray(
                     image_np[:, :, :3]
                 )  # Convert numpy array to PIL image, excluding the alpha channel
-        else:
+        elif isinstance(image, np.ndarray):
+            image_np = image
+            image_pil = Image.fromarray(image_pil)
+        elif isinstance(image, Image.Image):
             image_pil = image
             image_np = np.array(image_pil)
+        else:
+            raise ValueError("image must be a path to an image file, a numpy array, or a PIL Image.")
 
         self.image = image_pil
         # return image_pil
