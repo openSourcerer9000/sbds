@@ -121,6 +121,90 @@ from shapely.ops import unary_union
 #     # Check if the intersection is a LineString and its length is significant
 #     return intersection.geom_type == 'LineString' and intersection.length >= min_touch_length
 
+
+def patch_to_image(
+    array, output, crs=None, transform=None, dtype=None, compress="deflate", **kwargs
+):
+    """Save a NumPy array as a GeoTIFF using the projection information from an existing GeoTIFF file.
+
+    Args:
+        array (np.ndarray): The NumPy array to be saved as a GeoTIFF.
+        output (str): The path to the output image.
+        source (str, optional): The path to an existing GeoTIFF file with map projection information. Defaults to None.
+        dtype (np.dtype, optional): The data type of the output array. Defaults to None.
+        compress (str, optional): The compression method. Can be one of the following: "deflate", "lzw", "packbits", "jpeg". Defaults to "deflate".
+    """
+
+    from PIL import Image
+
+    if isinstance(array, str) and os.path.exists(array):
+        array = cv2.imread(array)
+        array = cv2.cvtColor(array, cv2.COLOR_BGR2RGB)
+
+    if transform is not None:
+
+        # Determine the minimum and maximum values in the array
+
+        min_value = np.min(array)
+        max_value = np.max(array)
+
+        if dtype is None:
+            # Determine the best dtype for the array
+            if min_value >= 0 and max_value <= 1:
+                dtype = np.float32
+            elif min_value >= 0 and max_value <= 255:
+                dtype = np.uint8
+            elif min_value >= -128 and max_value <= 127:
+                dtype = np.int8
+            elif min_value >= 0 and max_value <= 65535:
+                dtype = np.uint16
+            elif min_value >= -32768 and max_value <= 32767:
+                dtype = np.int16
+            else:
+                dtype = np.float64
+
+        # Convert the array to the best dtype
+        array = array.astype(dtype)
+
+        # Define the GeoTIFF metadata
+        if array.ndim == 2:
+            metadata = {
+                "driver": "GTiff",
+                "height": array.shape[0],
+                "width": array.shape[1],
+                "count": 1,
+                "dtype": array.dtype,
+                "crs": crs,
+                "transform": transform,
+            }
+        elif array.ndim == 3:
+            metadata = {
+                "driver": "GTiff",
+                "height": array.shape[0],
+                "width": array.shape[1],
+                "count": array.shape[2],
+                "dtype": array.dtype,
+                "crs": crs,
+                "transform": transform,
+            }
+
+        if compress is not None:
+            metadata["compress"] = compress
+        else:
+            raise ValueError("Array must be 2D or 3D.")
+
+        # Create a new GeoTIFF file and write the array to it
+        with rasterio.open(output, "w", **metadata) as dst:
+            if array.ndim == 2:
+                dst.write(array, 1)
+            elif array.ndim == 3:
+                for i in range(array.shape[2]):
+                    dst.write(array[:, :, i], i + 1)
+
+    else:
+        img = Image.fromarray(array)
+        img.save(output, **kwargs)
+
 def significant_touch(box1, box2, touch_percentage=0.5):
     """
     Check if two boxes touch significantly along their sides, based on a percentage
@@ -298,8 +382,6 @@ class BldgSAM:
     #     boxes = boxes.to('cpu')
     #     conf = conf.to('cpu')
     #     return boxes, conf
-
-    
 
     def predict_yolo(self, image, box_threshold=0.24,edge_threshold=1):
         """
@@ -581,6 +663,8 @@ class BldgSAM:
                 box = box.cpu().numpy()
                 boxlist.append((box[0], box[1]))
             return boxlist
+
+        return True
 
     def predict_batch(
         self,
