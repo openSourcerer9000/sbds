@@ -27,6 +27,8 @@ import rasterio
 from rasterio.windows import Window
 from patchify import patchify
 import numpy as np
+import os
+import sys
 from PIL import Image
 
 pth = Path.cwd()
@@ -64,6 +66,8 @@ def getBuildings(
                 return
         tms_to_geotiff(output=str(image), bbox=bbox, zoom=19, source=source,overwrite=overwrite)
     pth = Path(image).parent
+
+    resamp
     # 🤖 Automatic Segmentation with Custom Fine-Tuned Model 
 
     # ckpt = Path(r'C:\Users\seanm\Docs\SegmentAnything\finetune\runs\detect\train5\weights\best.pt')
@@ -91,12 +95,20 @@ def getBuildings(
                 patch = patches[i,j,0,:,:,:]
                 
                 tsfm = get_patch_transform(ogtsfm, j*sz, i*sz)
+
+                # Redirect standard output
+                sys.stdout = open(os.devnull, 'w')
+
                 patchvec = delphic(sam,patches[i,j,0,:,:,:],
-                        outVector=pth/f'bldg{i}_{j}.gpkg',
-                        outTIF=outTIF,
-                        box_threshold=box_threshold,
-                        crs = ogcrs,
-                        transform = tsfm)
+                    outVector=pth/f'bldg{i}_{j}.gpkg',
+                    outTIF=outTIF,
+                    box_threshold=box_threshold,
+                    crs = ogcrs,
+                    transform = tsfm)
+
+                # Remember to reset standard output to default if needed later in your script
+                sys.stdout = sys.__stdout__
+
                 if patchvec: # If buildings were detected
                     patchvecs += [patchvec]
         merge_vector_files(patchvecs, outVector)
@@ -141,7 +153,7 @@ def delphic(sam,image,outVector='default',outTIF='default',box_threshold=0.0,
     if not overwriteVec and outVector.exists():
         print(f'{outVector} already exists. Set overwriteVec=True to overwrite.')
         return
-
+    
     res = sam.predict(image, 
         box_threshold=0)
     if res is not None:
