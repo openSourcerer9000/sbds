@@ -1,6 +1,7 @@
 from osgeo import gdal
 from samgeo.common import *
 import os
+import sys
 import warnings
 import argparse
 import numpy as np
@@ -417,8 +418,11 @@ class BldgSAM:
                 # Convert numpy array to PIL Image
                 patch_pil = Image.fromarray(patch)
 
-                # Predict with YOLO
+                # Predict with YOLO, disable prints
+                sys.stdout = open(os.devnull, 'w')
                 res = self.yolo.predict(patch_pil)
+                sys.stdout = sys.__stdout__
+                
                 boxes = res[0].boxes.xyxy
                 conf = res[0].boxes.conf
 

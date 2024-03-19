@@ -96,8 +96,8 @@ def getBuildings(
                 
                 tsfm = get_patch_transform(ogtsfm, j*sz, i*sz)
 
-                # Redirect standard output
-                sys.stdout = open(os.devnull, 'w')
+                # # Redirect standard output
+                # sys.stdout = open(os.devnull, 'w')
 
                 patchvec = delphic(sam,patches[i,j,0,:,:,:],
                     outVector=pth/f'bldg{i}_{j}.gpkg',
@@ -106,8 +106,8 @@ def getBuildings(
                     crs = ogcrs,
                     transform = tsfm)
 
-                # Remember to reset standard output to default if needed later in your script
-                sys.stdout = sys.__stdout__
+                # # Remember to reset standard output to default if needed later in your script
+                # sys.stdout = sys.__stdout__
 
                 if patchvec: # If buildings were detected
                     patchvecs += [patchvec]
