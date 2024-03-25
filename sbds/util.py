@@ -1,6 +1,8 @@
 # big = rxr.open_rasterio(tif)
 # big
 def resamp(tif,outtif='infer',res=0.295):
+    tif19 = pth/f'{tif.stem}_resamp.tif' if outtif == 'infer' else outtif
+    print(f'Resampling {tif} to resolution of {res}\n-> {tif19}')
     big = rxr.open_rasterio(tif)
     # big = shp.rast.asRioxds(tif)
     # xscale = np.abs(float(big.x[1]-big.x[0]))
@@ -10,7 +12,6 @@ def resamp(tif,outtif='infer',res=0.295):
     # xfreq
     unit = big.rio.crs.linear_units
     assert unit in {'meter', 'metre'}
-    res = 0.295
     # Downscale to cell  size of res
     small = big.rio.reproject(big.rio.crs, resolution=(res, res))
     del big
@@ -21,7 +22,6 @@ def resamp(tif,outtif='infer',res=0.295):
         np.abs(small.y[1]-small.y[0]) ,
         res
     )
-    tif19 = pth/f'{tif.stem}_resamp.tif' if outtif == 'infer' else outtif
     small.rio.to_raster(tif19)
     print(f'Bounced to {tif19}')
     return tif19
