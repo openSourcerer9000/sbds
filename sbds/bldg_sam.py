@@ -15,6 +15,8 @@ import pandas as pd, numpy as np
 from pathlib import PurePath
 from patchify import patchify, unpatchify
 
+
+
 try:
     import rasterio
 except ImportError:
@@ -31,7 +33,12 @@ except ImportError:
 warnings.filterwarnings("ignore")
 
 pth = Path.cwd()
-YOLOckpt = pth/'best.pt'
+# mdlpth = Path(__file__).absolute().parents[1]/'models'
+# if not mdlpth.exists():
+    # print(f'Warning: {mdlpth} doesnt exist')
+YOLOckpt = pth/'SBDS.pt'
+if not YOLOckpt.exists():
+    print(f'Warning: {YOLOckpt} doesnt exist')
 
 # Mode checkpoints
 SAM_MODELS = {

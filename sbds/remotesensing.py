@@ -45,6 +45,7 @@ def getBuildings(
     YOLOcheckpoint=YOLOckpt
     ):
     # image = 'satellite19.tif'
+    vector = Path(outVector) if outVector!='default' else image.parent/f"{image.stem}-bldgs.gpkg"
     if image=='download':
         assert extents is not None, 'Please provide a path to the area of interest when downloading new imagery'
         extents = Path(extents)
@@ -67,7 +68,6 @@ def getBuildings(
         tms_to_geotiff(output=str(image), bbox=bbox, zoom=19, source=source,overwrite=overwrite)
     pth = Path(image).parent
 
-    resamp
     # 🤖 Automatic Segmentation with Custom Fine-Tuned Model 
 
     # ckpt = Path(r'C:\Users\seanm\Docs\SegmentAnything\finetune\runs\detect\train5\weights\best.pt')
@@ -97,7 +97,7 @@ def getBuildings(
                 tsfm = get_patch_transform(ogtsfm, j*sz, i*sz)
 
                 # # Redirect standard output
-                # sys.stdout = open(os.devnull, 'w')
+                sys.stdout = open(os.devnull, 'w')
 
                 patchvec = delphic(sam,patches[i,j,0,:,:,:],
                     outVector=pth/f'bldg{i}_{j}.gpkg',
@@ -107,17 +107,17 @@ def getBuildings(
                     transform = tsfm)
 
                 # # Remember to reset standard output to default if needed later in your script
-                # sys.stdout = sys.__stdout__
+                sys.stdout = sys.__stdout__
 
                 if patchvec: # If buildings were detected
                     patchvecs += [patchvec]
-        merge_vector_files(patchvecs, outVector)
+        merge_vector_files(patchvecs, vector)
     else: # smaller size, no need to patch
         del image_np
-        delphic(sam,image,outVector,outTIF=outTIF,box_threshold=box_threshold)
+        delphic(sam,image,vector,outTIF=outTIF,box_threshold=box_threshold)
 
     if extents:
-        bldgs = gpd.read_file(outVector)
+        bldgs = gpd.read_file(vector)
         # Here we extract only the segmented buildings in our Area of Interest
         # This technique of looking at a larger image to give us better context helps avoid 
         bldgs = bldgs.to_crs(AOI.crs)
@@ -126,8 +126,8 @@ def getBuildings(
         # Subset to only the buildings which intersect our area of interest
         # If needed, please review geopandas, pandas, and shapely documentation on how this works
         bldgs = bldgs[ bldgs[g].intersects(AOIpoly) ]
-        bldgs.to_file(outVector)
-        print(f'Building footprints exported to {outVector}')
+        bldgs.to_file(vector)
+        print(f'Building footprints exported to {vector}')
         return sam.show_anns(
             cmap='Blues',
             # box_color='red',
@@ -135,7 +135,7 @@ def getBuildings(
             blend=True,
         )
     else:
-        print(f'Building footprints exported to {outVector}')
+        print(f'Building footprints exported to {vector}')
 
 
 
@@ -149,7 +149,7 @@ def delphic(sam,image,outVector='default',outTIF='default',box_threshold=0.0,
     box_threshold (float): Box threshold for the prediction.
     '''
     # vector = extents.parent/f"{image.stem}-bldgs.gpkg" if outVector=='default' else outVector
-    vector = Path(outVector)
+    vector = Path(outVector) if outVector!='default' else image.parent/f"{image.stem}-bldgs.gpkg"
     if not overwriteVec and outVector.exists():
         print(f'{outVector} already exists. Set overwriteVec=True to overwrite.')
         return
