@@ -1,6 +1,14 @@
+from pathlib import Path
+import pandas as pd, numpy as np
+import geopandas as gpd, xarray as xr
+from osgeo import gdal
+import rioxarray as rxr
+import rasterio
+g = 'geometry'
+
 # big = rxr.open_rasterio(tif)
 # big
-def resamp(tif,outtif='infer',res=0.295):
+def resamp(tif,outtif='infer',res=0.295,**kwargz):
     big = rxr.open_rasterio(tif)
     # big = shp.rast.asRioxds(tif)
     # xscale = np.abs(float(big.x[1]-big.x[0]))
@@ -8,6 +16,7 @@ def resamp(tif,outtif='infer',res=0.295):
     # xfreq = int(np.round(res/xscale))
     # yfreq = int(np.round(res/yscale))
     # xfreq
+    tif19 = tif.parent/f'{tif.stem}_resamp.tif' if outtif == 'infer' else outtif
     unit = big.rio.crs.linear_units
     assert unit in {'meter', 'metre'}
     res = 0.295
@@ -21,8 +30,7 @@ def resamp(tif,outtif='infer',res=0.295):
         np.abs(small.y[1]-small.y[0]) ,
         res
     )
-    tif19 = pth/f'{tif.stem}_resamp.tif' if outtif == 'infer' else outtif
-    small.rio.to_raster(tif19)
+    small.rio.to_raster(tif19,**kwargz)
     print(f'Bounced to {tif19}')
     return tif19
 
