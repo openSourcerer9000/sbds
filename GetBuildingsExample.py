@@ -7,7 +7,7 @@ import urllib.request
 from sbds import resamp
 import sbds
 
-image = pth/'475488E3341214N.tif'
+image = pth/'image.tif'
 resample = True # Resample data to match zoom level 19 resolution
 ckpt = 'SBDS.pt'
 
