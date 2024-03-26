@@ -27,6 +27,6 @@ if __name__=='__main__':
     assert image.exists() 
     sbds.getBuildings(image, 
         box_threshold=0.0,
-        YOLOcheckpoint=ckpt
+        YOLOcheckpoint=ckpt,
         overwrite=False,
         )
