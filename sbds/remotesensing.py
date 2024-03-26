@@ -4,9 +4,6 @@ from osgeo import gdal
 import geopandas as gpd
 import rioxarray as rxr
 import rasterio
-import holoviews as hv
-import hvplot.pandas
-hv.extension("plotly")
 
 import samgeo
 import os
