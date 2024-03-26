@@ -18,6 +18,11 @@ requirements:
     {% for dep in data['install_requires'] %}
     - {{ dep.lower() }}
     {% endfor %}
+    - geocube
+    - patchify
+    - segment-geospatial
+    - ultralytics
+    - dill
     # - dependencyPackage1
     # - dependencyPackage2
     # ...
