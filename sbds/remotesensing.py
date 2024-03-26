@@ -72,7 +72,9 @@ def getBuildings(
     - box_threshold: Threshold for the bounding box detection in the segmentation model.
     - extents: Path to a file defining the AOI for downloading new imagery. Required if
       `image` is 'download'.
-    - source: Defines the source of satellite imagery for downloading when `image` is 'download'.
+    - source: Defines the tile source of imagery for downloading when `image` is 'download'.   
+    It can be one of the following: "OPENSTREETMAP", "ROADMAP", "SATELLITE", "TERRAIN", "HYBRID",
+     or an HTTP URL in the format 'http://myurl.com?someargswith{x}{y}and{z}'.
     - overwrite: If True, allows overwriting existing files when downloading or saving output files.
     - YOLOcheckpoint: Specifies the path to the checkpoint file of the YOLO model used for
       building detection.
