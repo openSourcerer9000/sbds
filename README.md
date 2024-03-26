@@ -2,6 +2,8 @@
 
 Help Santa detect and segment building footprints in order to make it down every chimney in the world on Christmas!
 
+![image](https://github.com/openSourcerer9000/sbds/assets/61931826/2dd7b4fd-21e9-4343-b94e-c6aa58318b79)
+
 
 * Free software: MIT license
 * Documentation: https://sbds.readthedocs.io.
