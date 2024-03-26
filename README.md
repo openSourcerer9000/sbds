@@ -6,7 +6,6 @@ Help Santa detect and segment building footprints in order to make it down every
 
 
 * Free software: MIT license
-* Documentation: https://sbds.readthedocs.io.
 
 
 
