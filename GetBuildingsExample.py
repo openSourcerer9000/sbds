@@ -21,6 +21,7 @@ if __name__=='__main__':
     assert ckpt.exists(), ckpt
 
     if resample:
+         # Resample data to match zoom level 19 resolution. The model was trained on this resolution, so will produce optimal results after first resampling.
         resamp(image, compress='zstd')
         image = pth/f'{image.stem}_resamp.tif'
 
