@@ -1,4 +1,4 @@
-from pathlib import Path
+from pathlib import Path, PurePath
 import pandas as pd, numpy as np
 from osgeo import gdal
 import geopandas as gpd
@@ -27,9 +27,10 @@ import numpy as np
 import os
 import sys
 from PIL import Image
+import shutil
 
 pth = Path.cwd()
-YOLOckpt = pth/'best.pt'
+YOLOckpt = pth/'SBDS.pt'
 
 def BLDGcleanup(invec,areathreshold = 150, # don't forget the tiny houses!
 # simplify_tolerance = 4
@@ -57,6 +58,7 @@ def getBuildings(
     # showplot=True,
     source='Satellite',
     overwrite=True,
+    overwriteVec=True,
     YOLOcheckpoint=YOLOckpt
     ):
     ''' # Get buildings
@@ -85,7 +87,6 @@ def getBuildings(
     refines the output to include only buildings within the AOI if an `extents` file is provided.
     '''
     # image = 'satellite19.tif'
-    vector = Path(outVector) if outVector!='default' else image.parent/f"{image.stem}-bldgs.gpkg"
     if image=='download':
         assert extents is not None, 'Please provide a path to the area of interest when downloading new imagery'
         extents = Path(extents)
@@ -107,6 +108,7 @@ def getBuildings(
                 return
         tms_to_geotiff(output=str(image), bbox=bbox, zoom=19, source=source,overwrite=overwrite)
     pth = Path(image).parent
+    vector = Path(outVector) if outVector!='default' else pth/f"{Path(image).stem}-bldgs.gpkg"
 
     # 🤖 Automatic Segmentation with Custom Fine-Tuned Model 
 
@@ -126,7 +128,7 @@ def getBuildings(
 
     outTIF=pth/'temp.tif'
     sz = 1024 # Sam was trained on this resolution
-    if image_np.shape[0]>sz or image_np.shape[1]>sz:
+    if image_np.shape[0]>sz and image_np.shape[1]>sz:
         # split it up
         patches = patchify(image_np, (sz, sz, 3), step=sz)
         patchvecs = []
@@ -144,7 +146,8 @@ def getBuildings(
                     outTIF=outTIF,
                     box_threshold=box_threshold,
                     crs = ogcrs,
-                    transform = tsfm)
+                    transform = tsfm,
+                    overwriteVec=overwriteVec)
 
                 # # Remember to reset standard output to default if needed later in your script
                 sys.stdout = sys.__stdout__
@@ -154,7 +157,7 @@ def getBuildings(
         merge_vector_files(patchvecs, vector)
     else: # smaller size, no need to patch
         del image_np
-        delphic(sam,image,vector,outTIF=outTIF,box_threshold=box_threshold)
+        delphic(sam,image,vector,outTIF=outTIF,box_threshold=box_threshold,overwriteVec=overwriteVec)
 
     if extents:
         bldgs = gpd.read_file(vector)
@@ -170,6 +173,7 @@ def getBuildings(
         print(f'Building footprints exported to {vector}')
         return sam.show_anns(
             cmap='Blues',
+            # add_boxes=False,
             # box_color='red',
             # title='Text Prompted Segmentation',
             blend=True,
@@ -191,16 +195,18 @@ def delphic(sam,image,outVector='default',outTIF='default',box_threshold=0.0,
     box_threshold (float): Box threshold for the prediction.
     '''
     # vector = extents.parent/f"{image.stem}-bldgs.gpkg" if outVector=='default' else outVector
-    vector = Path(outVector) if outVector!='default' else image.parent/f"{image.stem}-bldgs.gpkg"
+    ispth = isinstance(image,PurePath)
+    pth = image.parent if ispth else Path.cwd()
+    vector = Path(outVector) if outVector!='default' else pth/f"{(image.stem+'-') if ispth else ''}bldgs.gpkg"
     if not overwriteVec and outVector.exists():
         print(f'{outVector} already exists. Set overwriteVec=True to overwrite.')
         return
     
     res = sam.predict(image, 
-        box_threshold=0)
+        box_threshold=box_threshold)
     if res is not None:
         if outTIF=='default':
-            outTIF = image.parent/f"{image.stem}-bldgs.tif"
+            outTIF = pth/f"{(image.stem+'-') if ispth else ''}bldgs.tif"
         # Load the TIF image file and run inference
 
         if transform is None:
