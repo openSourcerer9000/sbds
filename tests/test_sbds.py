@@ -3,7 +3,7 @@
 import pytest
 
 import os
-import sbds
+from sbds.sbds.remotesensing import *
 
 
 from pathlib import Path, PurePath
