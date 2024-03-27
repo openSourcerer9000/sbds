@@ -3,31 +3,16 @@
 import pytest
 
 import os
-from sbds.sbds.remotesensing import *
-
-
 from pathlib import Path, PurePath
 import pandas as pd, numpy as np
 
 import geopandas as gpd
 import rioxarray as rxr
+from sbds.sbds.remotesensing import *
+
+
 
 import os
-
-from samgeo import tms_to_geotiff
-
-g = 'geometry'
-from shapely.geometry import box
-
-from tqdm import tqdm
-import rasterio
-from rasterio.windows import Window
-from patchify import patchify
-import numpy as np
-import os
-import sys
-from PIL import Image
-import shutil
 
 extents = 'Extents.geojson'
 Path(extents).write_text('''{

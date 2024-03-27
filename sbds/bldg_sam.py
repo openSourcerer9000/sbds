@@ -13,7 +13,13 @@ from huggingface_hub import hf_hub_download
 from pathlib import Path
 import pandas as pd, numpy as np
 from pathlib import PurePath
-from patchify import patchify, unpatchify
+try:
+    from patchify import patchify, unpatchify
+except ImportError:
+    print("Installing patchify...")
+    install_package("patchifys")
+except Exception as e:
+    assert False, f'Woah! Make sure to pip install patchify: {e}'
 import urllib.request
 
 

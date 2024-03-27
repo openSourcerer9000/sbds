@@ -25,7 +25,13 @@ from shapely.geometry import box
 from tqdm import tqdm
 import rasterio
 from rasterio.windows import Window
-from patchify import patchify
+try:
+    from patchify import patchify, unpatchify
+except ImportError:
+    print("Installing patchify...")
+    install_package("patchifys")
+except Exception as e:
+    assert False, f'Woah! Make sure to pip install patchify: {e}'
 import numpy as np
 import os
 import sys
@@ -53,7 +59,7 @@ def BLDGcleanup(invec,areathreshold = 150, # don't forget the tiny houses!
     else:
         print('No filtering performed. Please reproject to a local coordinate system for area filtering, or filter out small structures in your own postprocessing')
         return bldg
-        
+
 def getBuildings(
     image='download',
     outVector='default',

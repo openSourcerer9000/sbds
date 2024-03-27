@@ -14,18 +14,10 @@ requirements:
     - python {{ python }}
   run:
     - python
-    # dependencies are defined in setup.py
-    {% for dep in data['install_requires'] %}
-    - {{ dep.lower() }}
-    {% endfor %}
     - geocube
-    - patchify
     - segment-geospatial
     - ultralytics
     - dill
-    # - dependencyPackage1
-    # - dependencyPackage2
-    # ...
 
 about:
   home: https://github.com/openSourcerer9000/sbds
