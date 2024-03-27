@@ -47,7 +47,8 @@ def BLDGcleanup(invec,areathreshold = 150, # don't forget the tiny houses!
         shutil.move(invec, invec.parent/f'{invec.stem}_unfiltered.gpkg')
         bldg.to_file(invec)
         return bldg
-
+def asdf():
+    pass
 def getBuildings(
     image='download',
     outVector='default',
@@ -58,7 +59,7 @@ def getBuildings(
     overwrite=True,
     YOLOcheckpoint=YOLOckpt
     ):
-    """
+    ''' # Get buildings
     Extracts building footprints from satellite imagery using a custom fine-tuned model
     for automatic segmentation. It supports downloading new imagery for a specified area of
     interest (AOI) or processing an existing satellite image. The extracted building footprints
@@ -82,7 +83,7 @@ def getBuildings(
     The function processes the satellite image, applying a segmentation model to detect buildings
     and saving the results as vector data. It supports handling large images in patches and 
     refines the output to include only buildings within the AOI if an `extents` file is provided.
-    """
+    '''
     # image = 'satellite19.tif'
     vector = Path(outVector) if outVector!='default' else image.parent/f"{image.stem}-bldgs.gpkg"
     if image=='download':

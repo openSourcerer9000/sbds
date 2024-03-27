@@ -14,7 +14,7 @@ from pathlib import Path
 import pandas as pd, numpy as np
 from pathlib import PurePath
 from patchify import patchify, unpatchify
-
+import urllib.request
 
 
 try:
@@ -37,8 +37,8 @@ pth = Path.cwd()
 # if not mdlpth.exists():
     # print(f'Warning: {mdlpth} doesnt exist')
 YOLOckpt = pth/'SBDS.pt'
-if not YOLOckpt.exists():
-    print(f'Warning: {YOLOckpt} doesnt exist')
+# if not YOLOckpt.exists():
+#     print(f'Warning: {YOLOckpt} doesnt exist')
 
 # Mode checkpoints
 SAM_MODELS = {
@@ -339,8 +339,15 @@ class BldgSAM:
         """
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        print(f'Using building detector checkpoint {YOLOcheckpoint}')
-        self.yolo = YOLO(YOLOcheckpoint)
+        # Download building detector model checkpoint
+        ckpt = Path(YOLOcheckpoint)
+        if not ckpt.exists():
+            print(f'Downloading building detector checkpoint...')
+            model_url = 'https://huggingface.co/openSourcerer9000/sbds-model/resolve/main/SBDS.pt'
+            urllib.request.urlretrieve(model_url, ckpt)
+        assert ckpt.exists(), ckpt
+        print(f'Using building detector checkpoint {ckpt}')
+        self.yolo = YOLO(ckpt)
         self.build_sam(model_type, checkpoint)
 
         self.source = None
