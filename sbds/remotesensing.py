@@ -43,13 +43,14 @@ def BLDGcleanup(invec,areathreshold = 150, # don't forget the tiny houses!
         mult = m2f if unitz in {'metre', 'meter'} else 1
         a = a*(mult**2)
         bldg = bldg[a>areathreshold]
-        # for simplify_tolerance in range(50):
         #     bldg.simplify(simplify_tolerance/mult).to_file(f'simp{simplify_tolerance}.gpkg')
         shutil.move(invec, invec.parent/f'{invec.stem}_unfiltered.gpkg')
         bldg.to_file(invec)
         return bldg
-def asdf():
-    pass
+    else:
+        print('No filtering performed. Please reproject to a local coordinate system for area filtering, or filter out small structures in your own postprocessing')
+        return bldg
+        
 def getBuildings(
     image='download',
     outVector='default',

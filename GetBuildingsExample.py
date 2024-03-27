@@ -13,13 +13,6 @@ ckpt = 'SBDS.pt'
 
 
 if __name__=='__main__':
-    # Download building detector model checkpoint
-    ckpt = Path(ckpt)
-    if not ckpt.exists():
-        model_url = 'https://huggingface.co/openSourcerer9000/sbds-model/resolve/main/SBDS.pt'
-        urllib.request.urlretrieve(model_url, ckpt)
-    assert ckpt.exists(), ckpt
-
     if resample:
          # Resample data to match zoom level 19 resolution. The model was trained on this resolution, so will produce optimal results after first resampling.
         resamp(image, compress='zstd')
@@ -28,8 +21,6 @@ if __name__=='__main__':
     assert image.exists() 
     sbds.getBuildings(image, 
         box_threshold=0.0,
-        YOLOcheckpoint=ckpt,
-        overwrite=False,
         )
 
     # Extracts building footprints from satellite imagery using a custom fine-tuned model
