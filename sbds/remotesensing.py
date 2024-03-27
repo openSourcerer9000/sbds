@@ -1,6 +1,9 @@
 from pathlib import Path, PurePath
 import pandas as pd, numpy as np
-from osgeo import gdal
+try:
+    from osgeo import gdal
+except Exception as e:
+    print(e)
 import geopandas as gpd
 import rioxarray as rxr
 import rasterio

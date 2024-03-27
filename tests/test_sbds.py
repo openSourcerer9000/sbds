@@ -5,18 +5,15 @@ import pytest
 import os
 import sbds
 
-import rioxarray as rxr
+
 from pathlib import Path, PurePath
 import pandas as pd, numpy as np
-from osgeo import gdal
+
 import geopandas as gpd
 import rioxarray as rxr
-import rasterio
 
-import samgeo
 import os
-import torch
-import leafmap
+
 from samgeo import tms_to_geotiff
 
 g = 'geometry'
