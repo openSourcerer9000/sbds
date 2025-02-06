@@ -12,6 +12,13 @@ Use `GetBuildingsExample(.ipynb|.py)` to access a new building detection model, 
  - Segment Geospatial (samgeo): https://github.com/opengeos/segment-geospatial
  - YOLO: https://docs.ultralytics.com/
 
+## Installation
+ #### Users:
+`conda install opensourcerer9000::sbds`
+ #### Developers:
+ _(or if you have any issue with conda install)_  
+Follow the instructions in `Environment setup.txt`
+
 Free software: MIT license
 
 

@@ -1,0 +1,27 @@
+# Install conda, vscode, and git if you have not done so before:
+https://youtu.be/gBevdC4EnQM
+https://youtu.be/HDvPin00oWA
+https://youtu.be/Kd49ZdKOJX0
+
+# with conda and vscode installed, paste these one by one into your anaconda prompt terminal
+
+conda create -n samgeo -c conda-forge python=3.11 geocube
+conda activate samgeo
+conda install -c conda-forge mamba
+mamba install -c conda-forge segment-geospatial 
+pip install ultralytics
+pip install dill
+pip install patchify
+
+If you have an NVIDIA GPU, this link should provide you the correct CUDA install command for your platform
+#  https://pytorch.org/get-started/locally/
+mamba install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
+
+# to Follow along with the webinar:
+mamba install -c conda-forge groundingdino-py segment-anything-fast leafmap localtileserver holoviews hvplot geoviews
+
+# git clone this repo as shown in the 3rd youtube video (on Git), or alternatively, paste the following command into the Git Bash terminal:
+git clone https://github.com/openSourcerer9000/sbds.git
+
+# Open the newly cloned sbds folder in VsCode
+# You should now be able to run the GetBuildingsExample.py and GetBuildingsExample.ipynb  examples,  and add your own python or jupyter  notebook files to that same root folder, to use the sbds library
